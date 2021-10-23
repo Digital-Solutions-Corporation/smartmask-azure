@@ -4,6 +4,7 @@ import com.fiap.ds.smartmask.model.Usuario;
 import com.fiap.ds.smartmask.service.UsuarioService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.*;
@@ -29,9 +30,17 @@ public class UsuarioController {
     @ApiOperation(value = "Procurar um usuario pelo ID.")
     public Usuario findUsuarioById(@PathVariable int id) { return usuarioService.getUsuarioById(id); }
 
+    @GetMapping("/authUsuario")
+    @ApiOperation(value = "Procurar um usuário pelo email e senha.")
+    public Usuario findUsuarioByEmailAndSenha(@RequestParam String email, @RequestParam String senha) {
+        return usuarioService.getUsuarioByEmailAndSenha(email, senha);
+    }
+
     @PutMapping("/update")
     @ApiOperation(value = "Atualizar um usuario.")
-    public Usuario updateUsuario(@RequestBody Usuario usuario) { return usuarioService.updateUsuario(usuario); }
+    public Usuario updateUsuario(@RequestBody Usuario usuario) {
+        return usuarioService.updateUsuario(usuario);
+    }
 
     @DeleteMapping("/delete/{id}")
     @ApiOperation(value = "Deletar um usuario pelo ID.")

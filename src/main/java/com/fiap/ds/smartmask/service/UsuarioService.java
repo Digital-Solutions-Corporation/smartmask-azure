@@ -25,6 +25,10 @@ public class UsuarioService {
         return usuarioRepo.findById(id).orElse(null);
     }
 
+    public Usuario getUsuarioByEmailAndSenha(String email, String senha) {
+        return usuarioRepo.findByEmailAndSenha(email, senha).orElse(null);
+    }
+
     public String deleteUsuario(int id) {
         usuarioRepo.deleteById(id);
         return "Usuario removed - " + id;
@@ -32,8 +36,8 @@ public class UsuarioService {
 
     public Usuario updateUsuario(Usuario usuario) {
         Usuario existingUsuario = usuarioRepo.findById(usuario.getId()).orElse(usuario);
-        existingUsuario.setNome(usuario.getNome());
         existingUsuario.setEmail(usuario.getEmail());
+        existingUsuario.setNome(usuario.getNome());
         existingUsuario.setGenero(usuario.getGenero());
         existingUsuario.setSenha(usuario.getSenha());
         existingUsuario.setTelefone(usuario.getTelefone());
