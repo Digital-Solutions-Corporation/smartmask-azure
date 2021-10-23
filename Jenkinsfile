@@ -1,4 +1,5 @@
 node {
+  def repoUrl = "https://github.com/Digital-Solutions-Corporation/smartmask-azure"
   def resourceGroupName = 'rg-smartmask'
   def resourceGroupLocation = 'brazilsouth'
   def appServicePlanName = 'as-smartmask'
@@ -8,14 +9,14 @@ node {
   def packagePath = 'target/smartmask-0.0.1-SNAPSHOT.jar'
 
   stage("Fetch") {
-    echo "Getting source code from https://github.com/Digital-Solutions-Corporation/smartmask-azure"
+    echo "Getting source code from $repoUrl"
     checkout([
       $class: 'GitSCM',
       branches: [[name: '*/backend-mobile']],
       doGenerateSubmoduleConfigurations: false,
       extensions: [],
       submoduleCfg: [],
-      userRemoteConfigs: [[url: 'https://github.com/Digital-Solutions-Corporation/smartmask-azure.git']]
+      userRemoteConfigs: [[url: repoUrl]]
     ])        
   }
   stage('Build') {
@@ -24,6 +25,11 @@ node {
   }
   stage('Pre-deploy') {
     echo 'Configuring webapp...'
+
+    echo 'Azure login...'
+    withCredentials([usernamePassword(credentialsId: 'AzureServicePrincipal', passwordVariable: 'AZURE_CLIENT_SECRET', usernameVariable: 'AZURE_CLIENT_ID')]) {
+      sh 'az login -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET'
+    }
 
     echo 'Creating resource group...'
     sh "az group create --name $resourceGroupName --location $resourceGroupLocation"
@@ -36,9 +42,6 @@ node {
   }
 	stage('Deploy') {
 		echo 'Deploying to azure webapp...'
-    withCredentials([usernamePassword(credentialsId: 'AzureServicePrincipal', passwordVariable: 'AZURE_CLIENT_SECRET', usernameVariable: 'AZURE_CLIENT_ID')]) {
-      sh 'az login -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET'
-			sh "az webapp deploy --resource-group $resourceGroupName --name $webAppName --src-path $packagePath --type jar"
-    }
+		sh "az webapp deploy --resource-group $resourceGroupName --name $webAppName --src-path $packagePath --type jar"
   }
 }
