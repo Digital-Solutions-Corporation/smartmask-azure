@@ -1,4 +1,5 @@
 node {
+  def repoUrl = "https://github.com/Digital-Solutions-Corporation/smartmask-azure"
   def resourceGroupName = 'rg-smartmask'
   def resourceGroupLocation = 'brazilsouth'
   def appServicePlanName = 'as-smartmask'
@@ -15,6 +16,7 @@ node {
       doGenerateSubmoduleConfigurations: false,
       extensions: [],
       submoduleCfg: [],
+      userRemoteConfigs: [[url: repoUrl]]
     ])        
   }
   stage('Build') {
