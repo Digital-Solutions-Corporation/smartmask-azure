@@ -1,5 +1,4 @@
 node {
-  def repoUrl = "https://github.com/Digital-Solutions-Corporation/smartmask-azure"
   def resourceGroupName = 'rg-smartmask'
   def resourceGroupLocation = 'brazilsouth'
   def appServicePlanName = 'as-smartmask'
@@ -9,14 +8,13 @@ node {
   def packagePath = 'target/smartmask-0.0.1-SNAPSHOT.jar'
 
   stage("Fetch") {
-    echo "Getting source code from $repoUrl"
+    echo "Getting source code"
     checkout([
       $class: 'GitSCM',
       branches: [[name: '*/backend-mobile']],
       doGenerateSubmoduleConfigurations: false,
       extensions: [],
       submoduleCfg: [],
-      userRemoteConfigs: [[url: repoUrl]]
     ])        
   }
   stage('Build') {
@@ -26,8 +24,8 @@ node {
   stage('Pre-deploy') {
     echo 'Configuring webapp...'
 
-    echo 'Azure login...'
     withCredentials([usernamePassword(credentialsId: 'AzureServicePrincipal', passwordVariable: 'AZURE_CLIENT_SECRET', usernameVariable: 'AZURE_CLIENT_ID')]) {
+      echo 'Loging into azure...'
       sh 'az login -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET'
     }
 
